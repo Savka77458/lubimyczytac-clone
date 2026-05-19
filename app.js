@@ -7,6 +7,13 @@ const FIREBASE_URL = "https://lubimyczytac-projekt-default-rtdb.europe-west1.fir
 const bookForm = document.getElementById("bookForm");
 const booksContainer = document.getElementById("booksContainer");
 
+// Elementy Modala
+const modal = document.getElementById("bookModal");
+const closeBtn = document.querySelector(".close-btn");
+const modalTitle = document.getElementById("modalTitle");
+const modalAuthor = document.getElementById("modalAuthor");
+const modalDesc = document.getElementById("modalDesc");
+
 // Pobieranie i renderowanie książek z bazy danych
 async function fetchBooks() {
     try {
@@ -20,7 +27,7 @@ async function fetchBooks() {
             return;
         }
 
-        // Iteracja po obiektach Firebase i tworzenie kart HTML
+        // Iteracja po obiektach Firebase
         Object.keys(data).forEach(key => {
             const book = data[key];
             const bookCard = document.createElement("div");
@@ -29,9 +36,22 @@ async function fetchBooks() {
             bookCard.innerHTML = `
                 <h3>${book.title}</h3>
                 <div class="author">Autor: ${book.author}</div>
-                <div class="desc">${book.description}</div>
             `;
             
+            // Tworzenie przycisku "Szczegóły"
+            const detailsBtn = document.createElement("button");
+            detailsBtn.className = "details-btn";
+            detailsBtn.innerText = "Szczegóły";
+            
+            // Logika kliknięcia w przycisk
+            detailsBtn.addEventListener("click", () => {
+                modalTitle.innerText = book.title;
+                modalAuthor.innerText = book.author;
+                modalDesc.innerText = book.description || "Brak opisu.";
+                modal.style.display = "block";
+            });
+
+            bookCard.appendChild(detailsBtn);
             booksContainer.appendChild(bookCard);
         });
     } catch (error) {
@@ -67,6 +87,20 @@ bookForm.addEventListener("submit", async (e) => {
         console.error("Błąd sieci:", error);
     }
 });
+
+// --- Logika zamykania modala ---
+
+// Kliknięcie w (X)
+closeBtn.onclick = () => {
+    modal.style.display = "none";
+};
+
+// Kliknięcie w ciemne tło poza oknem
+window.onclick = (event) => {
+    if (event.target === modal) {
+        modal.style.display = "none";
+    }
+};
 
 // Wywołanie funkcji przy załadowaniu strony
 fetchBooks();
