@@ -124,3 +124,68 @@ button:hover {
 .book-card .desc {
     font-size: 0.95em;
 }
+
+/* Styl dla przycisku szczegółów */
+.details-btn {
+    background-color: #f1f2f6;
+    color: var(--primary-color);
+    border: 1px solid var(--border-color);
+    padding: 8px 12px;
+    margin-top: 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9em;
+    font-weight: bold;
+    width: 100%;
+    transition: 0.3s;
+}
+
+.details-btn:hover {
+    background-color: var(--secondary-color);
+    color: white;
+}
+
+/* Modal (wyskakujące okienko) */
+.modal {
+    display: none; /* Domyślnie ukryte */
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.6); /* Ciemne tło */
+}
+
+.modal-content {
+    background-color: #fff;
+    margin: 10% auto;
+    padding: 30px;
+    border-radius: 8px;
+    width: 80%;
+    max-width: 600px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    position: relative;
+}
+
+.close-btn {
+    color: #a4b0be;
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close-btn:hover {
+    color: #2f3542;
+}
+
+.modal-author {
+    font-weight: bold;
+    color: #7f8fa6;
+    margin-bottom: 15px;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 10px;
+}
