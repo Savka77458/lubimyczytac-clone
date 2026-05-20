@@ -61,6 +61,7 @@ label {
 }
 
 input[type="text"],
+select, /* Dodano select do stylów inputa */
 textarea {
     width: 100%;
     padding: 10px;
@@ -100,13 +101,14 @@ button:hover {
     grid-column: 1 / -1;
 }
 
-/* Wygląd pojedynczej książki (którą dodamy w JS) */
 .book-card {
     background: #fff;
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     border-left: 4px solid var(--secondary-color);
+    display: flex;
+    flex-direction: column; /* Dodano żeby przyciski były na dole */
 }
 
 .book-card h3 {
@@ -125,36 +127,16 @@ button:hover {
     font-size: 0.95em;
 }
 
-/* Styl dla przycisku szczegółów */
-.details-btn {
-    background-color: #f1f2f6;
-    color: var(--primary-color);
-    border: 1px solid var(--border-color);
-    padding: 8px 12px;
-    margin-top: 15px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 0.9em;
-    font-weight: bold;
-    width: 100%;
-    transition: 0.3s;
-}
-
-.details-btn:hover {
-    background-color: var(--secondary-color);
-    color: white;
-}
-
 /* Modal (wyskakujące okienko) */
 .modal {
-    display: none; /* Domyślnie ukryte */
+    display: none; 
     position: fixed;
     z-index: 1000;
     left: 0;
     top: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0,0,0,0.6); /* Ciemne tło */
+    background-color: rgba(0,0,0,0.6); 
 }
 
 .modal-content {
@@ -185,7 +167,65 @@ button:hover {
 .modal-author {
     font-weight: bold;
     color: #7f8fa6;
+    margin-bottom: 5px;
+}
+
+
+/* --- NOWE STYLE (ETAP 2) --- */
+
+.book-cover {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+    border-radius: 4px;
     margin-bottom: 15px;
-    border-bottom: 1px solid var(--border-color);
-    padding-bottom: 10px;
+}
+
+.category-badge {
+    background-color: #f1c40f;
+    color: #333;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 0.8em;
+    font-weight: bold;
+    display: inline-block;
+    margin-bottom: 10px;
+}
+
+.card-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: auto; /* Pycha przyciski na sam dół karty */
+    padding-top: 15px;
+}
+
+.details-btn, .delete-btn {
+    padding: 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9em;
+    font-weight: bold;
+    width: 100%;
+    transition: 0.3s;
+    border: none;
+}
+
+.details-btn {
+    background-color: #f1f2f6;
+    color: var(--primary-color);
+    border: 1px solid var(--border-color);
+}
+
+.details-btn:hover {
+    background-color: var(--secondary-color);
+    color: white;
+}
+
+.delete-btn {
+    background-color: #ff7675;
+    color: white;
+}
+
+.delete-btn:hover {
+    background-color: #d63031;
 }
