@@ -10,14 +10,12 @@
     <div class="container">
         <header>
             <h1>Klon LubimyCzytać</h1>
-            <p>Projekt semestralny — Etap 2</p>
-            <p class="student-info">Wykonali: Vladyslav Savka (PL77458) i Dmytro Datsenko (PL77384)</p>
+            <p>Projekt semestralny — Etap 3</p> <p class="student-info">Wykonali: Vladyslav Savka (PL77458) i Dmytro Datsenko (PL77384)</p>
         </header>
 
         <main>
             <section class="form-section">
-                <h2>Dodaj nową książkę</h2>
-                <form id="bookForm">
+                <h2 id="formTitle">Dodaj nową książkę</h2> <form id="bookForm">
                     <div class="form-group">
                         <label for="title">Tytuł książki:</label>
                         <input type="text" id="title" placeholder="Np. Wiedźmin" required>
@@ -50,14 +48,18 @@
                     </div>
 
                     <button type="submit" id="submitBtn">Dodaj do bazy</button>
+                    <button type="button" id="cancelEditBtn" style="display: none; background-color: #95a5a6; margin-top: 10px;">Anuluj edycję</button>
                 </form>
             </section>
 
             <section class="list-section">
                 <h2>Lista książek w bazie</h2>
+                
+                <input type="text" id="searchInput" class="search-bar" placeholder="Szukaj po tytule lub autorze...">
+
                 <div id="booksContainer">
                     <p class="loading">Ładowanie książek...</p>
-                    </div>
+                </div>
             </section>
         </main>
     </div>
