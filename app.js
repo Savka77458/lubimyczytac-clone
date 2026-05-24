@@ -1,5 +1,5 @@
 // Sprawdzenie czy plik działa poprawnie
-console.log("Skrypt app.js został pomyślnie załadowany. (Etap 2)");
+console.log("Skrypt app.js został pomyślnie załadowany. (Etap 3)");
 
 // URL do Firebase Realtime Database
 const FIREBASE_URL = "https://lubimyczytac-projekt-default-rtdb.europe-west1.firebasedatabase.app/books.json";
@@ -7,12 +7,18 @@ const FIREBASE_URL = "https://lubimyczytac-projekt-default-rtdb.europe-west1.fir
 const bookForm = document.getElementById("bookForm");
 const booksContainer = document.getElementById("booksContainer");
 
+// Elementy formularza i edycji (ETAP 3)
+const submitBtn = document.getElementById("submitBtn");
+const cancelEditBtn = document.getElementById("cancelEditBtn");
+const formTitle = document.getElementById("formTitle");
+let currentEditId = null; // Zmienna przechowująca ID aktualnie edytowanej książki
+
 // Elementy Modala
 const modal = document.getElementById("bookModal");
 const closeBtn = document.querySelector(".close-btn");
 const modalTitle = document.getElementById("modalTitle");
 const modalAuthor = document.getElementById("modalAuthor");
-const modalCategory = document.getElementById("modalCategory"); // Nowe
+const modalCategory = document.getElementById("modalCategory"); 
 const modalDesc = document.getElementById("modalDesc");
 
 // Pobieranie i renderowanie książek z bazy danych
@@ -34,15 +40,17 @@ async function fetchBooks() {
             const bookCard = document.createElement("div");
             bookCard.className = "book-card";
             
-            // NOWE: Sprawdzamy czy jest kategoria i okładka (dla starych książek w bazie)
+            // Sprawdzamy czy jest kategoria i okładka (zabezpieczenie)
             const catText = book.category ? book.category : "Brak kategorii";
-            const coverImg = book.coverUrl ? book.coverUrl : "https://via.placeholder.com/250x350?text=Brak+Okładki";
+            // Używamy niezawodnego linku z Unsplash jako domyślnej okładki
+            const coverImg = book.coverUrl ? book.coverUrl : "https://images.unsplash.com/photo-1543002588-bfa74002ed7e?w=300&q=80";
 
+            // Dodano klasy book-title i book-author dla wyszukiwarki
             bookCard.innerHTML = `
                 <img src="${coverImg}" class="book-cover" alt="Okładka">
                 <span class="category-badge">${catText}</span>
-                <h3>${book.title}</h3>
-                <div class="author">Autor: ${book.author}</div>
+                <h3 class="book-title">${book.title}</h3>
+                <div class="author book-author">Autor: ${book.author}</div>
             `;
             
             // Kontener na przyciski
@@ -57,12 +65,20 @@ async function fetchBooks() {
             detailsBtn.addEventListener("click", () => {
                 modalTitle.innerText = book.title;
                 modalAuthor.innerText = book.author;
-                modalCategory.innerText = catText; // Nowe
+                modalCategory.innerText = catText; 
                 modalDesc.innerText = book.description || "Brak opisu.";
                 modal.style.display = "block";
             });
 
-            // NOWE: Tworzenie przycisku "Usuń"
+            // NOWE (ETAP 3): Przycisk "Edytuj"
+            const editBtn = document.createElement("button");
+            editBtn.className = "edit-btn";
+            editBtn.innerText = "Edytuj";
+            editBtn.addEventListener("click", () => {
+                startEditing(key, book);
+            });
+
+            // Tworzenie przycisku "Usuń"
             const deleteBtn = document.createElement("button");
             deleteBtn.className = "delete-btn";
             deleteBtn.innerText = "Usuń";
@@ -74,6 +90,7 @@ async function fetchBooks() {
             });
 
             btnContainer.appendChild(detailsBtn);
+            btnContainer.appendChild(editBtn); // Dodano przycisk edycji
             btnContainer.appendChild(deleteBtn);
             bookCard.appendChild(btnContainer);
             
@@ -85,40 +102,102 @@ async function fetchBooks() {
     }
 }
 
-// NOWE: Funkcja do usuwania
+// NOWE (ETAP 3): Funkcja Wyszukiwania na żywo
+document.getElementById('searchInput').addEventListener('input', function(e) {
+    const searchTerm = e.target.value.toLowerCase();
+    const cards = document.querySelectorAll('.book-card');
+
+    cards.forEach(card => {
+        const title = card.querySelector('.book-title').innerText.toLowerCase();
+        const author = card.querySelector('.book-author').innerText.toLowerCase();
+        
+        if(title.includes(searchTerm) || author.includes(searchTerm)) {
+            card.style.display = 'flex';
+        } else {
+            card.style.display = 'none';
+        }
+    });
+});
+
+// NOWE (ETAP 3): Funkcja przygotowująca formularz do edycji
+function startEditing(id, book) {
+    currentEditId = id; 
+    
+    // Wypełnianie formularza danymi wybranej książki
+    document.getElementById("title").value = book.title;
+    document.getElementById("author").value = book.author;
+    document.getElementById("category").value = book.category || "Inne";
+    document.getElementById("coverUrl").value = book.coverUrl || "";
+    document.getElementById("description").value = book.description || "";
+
+    // Zmiana wyglądu formularza
+    formTitle.innerText = `Edytujesz: ${book.title}`;
+    submitBtn.innerText = "Zapisz zmiany";
+    submitBtn.style.backgroundColor = "#f39c12"; 
+    cancelEditBtn.style.display = "block";
+
+    // Przewinięcie strony do góry
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// NOWE (ETAP 3): Funkcja anulowania edycji
+cancelEditBtn.addEventListener("click", () => {
+    resetFormState();
+});
+
+function resetFormState() {
+    bookForm.reset();
+    currentEditId = null;
+    formTitle.innerText = "Dodaj nową książkę";
+    submitBtn.innerText = "Dodaj do bazy";
+    submitBtn.style.backgroundColor = ""; // Wracamy do domyślnego koloru z CSS
+    cancelEditBtn.style.display = "none";
+}
+
+// Funkcja do usuwania (DELETE)
 async function deleteBook(id) {
     const deleteUrl = `https://lubimyczytac-projekt-default-rtdb.europe-west1.firebasedatabase.app/books/${id}.json`;
     try {
         const response = await fetch(deleteUrl, { method: "DELETE" });
         if (response.ok) {
-            fetchBooks(); // Odśwież listę po usunięciu
+            fetchBooks(); 
         }
     } catch (error) {
         console.error("Błąd podczas usuwania:", error);
     }
 }
 
-// Obsługa formularza i wysyłanie danych (POST)
+// Obsługa formularza: Dodawanie (POST) lub Edycja (PUT)
 bookForm.addEventListener("submit", async (e) => {
     e.preventDefault();
 
     const title = document.getElementById("title").value;
     const author = document.getElementById("author").value;
-    const category = document.getElementById("category").value; // Nowe
-    const coverUrl = document.getElementById("coverUrl").value; // Nowe
+    const category = document.getElementById("category").value; 
+    const coverUrl = document.getElementById("coverUrl").value; 
     const description = document.getElementById("description").value;
 
-    const newBook = { title, author, category, coverUrl, description };
+    const bookData = { title, author, category, coverUrl, description };
 
     try {
-        const response = await fetch(FIREBASE_URL, {
-            method: "POST",
+        // Domyślnie ustawiamy dodawanie nowej książki
+        let url = FIREBASE_URL;
+        let method = "POST";
+
+        // Jeśli jesteśmy w trybie edycji, zmieniamy URL i metodę na PUT
+        if (currentEditId) {
+            url = `https://lubimyczytac-projekt-default-rtdb.europe-west1.firebasedatabase.app/books/${currentEditId}.json`;
+            method = "PUT";
+        }
+
+        const response = await fetch(url, {
+            method: method,
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(newBook)
+            body: JSON.stringify(bookData)
         });
 
         if (response.ok) {
-            bookForm.reset();
+            resetFormState(); // Czyszczenie i powrót do trybu dodawania
             fetchBooks();
         } else {
             console.error("Błąd zapisu w bazie danych.");
