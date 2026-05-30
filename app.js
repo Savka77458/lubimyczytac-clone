@@ -41,6 +41,10 @@ async function fetchBooks() {
             const bookCard = document.createElement("div");
             bookCard.className = "book-card";
             
+            // NOWE (ETAP 4): Atrybuty danych do sortowania
+            bookCard.setAttribute("data-rating", book.rating || 0);
+            bookCard.setAttribute("data-title", book.title || "");
+
             // Sprawdzamy czy jest kategoria i okładka (zabezpieczenie)
             const catText = book.category ? book.category : "Brak kategorii";
             const coverImg = book.coverUrl ? book.coverUrl : "https://images.unsplash.com/photo-1543002588-bfa74002ed7e?w=300&q=80";
@@ -101,29 +105,47 @@ async function fetchBooks() {
             
             booksContainer.appendChild(bookCard);
         });
+        
+        // NOWE (ETAP 4): Wywołanie po załadowaniu, by zaaplikować ew. domyślne sortowanie
+        updateBooksDisplay();
+        
     } catch (error) {
         console.error("Błąd pobierania danych:", error);
         booksContainer.innerHTML = "<p class='loading'>Wystąpił błąd podczas ładowania danych.</p>";
     }
 }
 
-// Funkcja Wyszukiwania na żywo i Filtrowania (ETAP 3 i 4)
-function filterBooks() {
+// Funkcja Wyszukiwania, Filtrowania i Sortowania (ETAP 3 i 4)
+function updateBooksDisplay() {
     const searchTerm = document.getElementById('searchInput').value.toLowerCase();
     const selectedCategory = document.getElementById('categoryFilter').value.toLowerCase();
-    const cards = document.querySelectorAll('.book-card');
+    const sortValue = document.getElementById('sortFilter').value;
+    const container = document.getElementById('booksContainer');
+    const cards = Array.from(container.querySelectorAll('.book-card'));
 
+    // 1. Najpierw sortujemy tablicę kart
+    cards.sort((a, b) => {
+        if (sortValue === 'ratingDesc') {
+            return parseFloat(b.dataset.rating) - parseFloat(a.dataset.rating);
+        } else if (sortValue === 'ratingAsc') {
+            return parseFloat(a.dataset.rating) - parseFloat(b.dataset.rating);
+        } else if (sortValue === 'titleAsc') {
+            return a.dataset.title.localeCompare(b.dataset.title);
+        }
+        return 0; // domyślnie
+    });
+
+    // 2. Następnie dodajemy je z powrotem do kontenera w nowej kolejności i filtrujemy
     cards.forEach(card => {
+        container.appendChild(card); // To automatycznie zmienia ich kolejność w DOM
+
         const title = card.querySelector('.book-title').innerText.toLowerCase();
         const author = card.querySelector('.book-author').innerText.toLowerCase();
         const category = card.querySelector('.category-badge').innerText.toLowerCase();
         
-        // Sprawdzamy czy tekst pasuje
         const matchesSearch = title.includes(searchTerm) || author.includes(searchTerm);
-        // Sprawdzamy czy kategoria pasuje
         const matchesCategory = selectedCategory === 'all' || category === selectedCategory;
 
-        // Pokaż kartę tylko jeśli pasuje i do wyszukiwarki, i do filtra
         if(matchesSearch && matchesCategory) {
             card.style.display = 'flex';
         } else {
@@ -132,9 +154,10 @@ function filterBooks() {
     });
 }
 
-// Nasłuchiwanie zmian w polu wyszukiwania i na liście rozwijanej
-document.getElementById('searchInput').addEventListener('input', filterBooks);
-document.getElementById('categoryFilter').addEventListener('change', filterBooks);
+// Nasłuchiwanie zmian w polu wyszukiwania i na listach rozwijanych
+document.getElementById('searchInput').addEventListener('input', updateBooksDisplay);
+document.getElementById('categoryFilter').addEventListener('change', updateBooksDisplay);
+document.getElementById('sortFilter').addEventListener('change', updateBooksDisplay);
 
 
 // Funkcja przygotowująca formularz do edycji (ETAP 3 i 4)
