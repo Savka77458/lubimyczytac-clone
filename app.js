@@ -20,7 +20,7 @@ const modalTitle = document.getElementById("modalTitle");
 const modalAuthor = document.getElementById("modalAuthor");
 const modalCategory = document.getElementById("modalCategory"); 
 const modalDesc = document.getElementById("modalDesc");
-const modalRating = document.getElementById("modalRating"); // NOWE (ETAP 4)
+const modalRating = document.getElementById("modalRating"); 
 
 // Pobieranie i renderowanie książek z bazy danych
 async function fetchBooks() {
@@ -28,7 +28,7 @@ async function fetchBooks() {
         const response = await fetch(FIREBASE_URL);
         const data = await response.json();
         
-        // NOWE (ETAP 4): Aktualizacja panelu statystyk po pobraniu danych
+        // Aktualizacja panelu statystyk
         updateStatistics(data);
         
         booksContainer.innerHTML = "";
@@ -44,18 +44,17 @@ async function fetchBooks() {
             const bookCard = document.createElement("div");
             bookCard.className = "book-card";
             
-            // NOWE (ETAP 4): Atrybuty danych do sortowania
+            // Atrybuty danych do sortowania
             bookCard.setAttribute("data-rating", book.rating || 0);
             bookCard.setAttribute("data-title", book.title || "");
 
-            // Sprawdzamy czy jest kategoria i okładka (zabezpieczenie)
+            // Sprawdzamy czy jest kategoria i okładka
             const catText = book.category ? book.category : "Brak kategorii";
             const coverImg = book.coverUrl ? book.coverUrl : "https://images.unsplash.com/photo-1543002588-bfa74002ed7e?w=300&q=80";
             
-            // NOWE (ETAP 4): Formatowanie oceny na gwiazdki wizualne
+            // Formatowanie oceny na gwiazdki wizualne
             const ratingText = book.rating ? generateStars(book.rating) : "Brak oceny";
 
-            // Dodano klasy book-title i book-author dla wyszukiwarki
             bookCard.innerHTML = `
                 <img src="${coverImg}" class="book-cover" alt="Okładka">
                 <span class="category-badge">${catText}</span>
@@ -77,12 +76,12 @@ async function fetchBooks() {
                 modalTitle.innerText = book.title;
                 modalAuthor.innerText = book.author;
                 modalCategory.innerText = catText; 
-                modalRating.innerText = ratingText; // NOWE (ETAP 4)
+                modalRating.innerText = ratingText;
                 modalDesc.innerText = book.description || "Brak opisu.";
                 modal.style.display = "block";
             });
 
-            // Przycisk "Edytuj" (ETAP 3)
+            // Przycisk "Edytuj"
             const editBtn = document.createElement("button");
             editBtn.className = "edit-btn";
             editBtn.innerText = "Edytuj";
@@ -90,7 +89,7 @@ async function fetchBooks() {
                 startEditing(key, book);
             });
 
-            // Tworzenie przycisku "Usuń"
+            // Przycisk "Usuń"
             const deleteBtn = document.createElement("button");
             deleteBtn.className = "delete-btn";
             deleteBtn.innerText = "Usuń";
@@ -109,7 +108,7 @@ async function fetchBooks() {
             booksContainer.appendChild(bookCard);
         });
         
-        // NOWE (ETAP 4): Wywołanie po załadowaniu, by zaaplikować ew. domyślne sortowanie
+        // Wywołanie po załadowaniu, by zaaplikować filtry i sortowanie
         updateBooksDisplay();
         
     } catch (error) {
@@ -118,7 +117,7 @@ async function fetchBooks() {
     }
 }
 
-// Funkcja Wyszukiwania, Filtrowania i Sortowania (ETAP 3 i 4)
+// Funkcja Wyszukiwania, Filtrowania i Sortowania
 function updateBooksDisplay() {
     const searchTerm = document.getElementById('searchInput').value.toLowerCase();
     const selectedCategory = document.getElementById('categoryFilter').value.toLowerCase();
@@ -157,35 +156,30 @@ function updateBooksDisplay() {
     });
 }
 
-// Nasłuchiwanie zmian w polu wyszukiwania i na listach rozwijanych
 document.getElementById('searchInput').addEventListener('input', updateBooksDisplay);
 document.getElementById('categoryFilter').addEventListener('change', updateBooksDisplay);
 document.getElementById('sortFilter').addEventListener('change', updateBooksDisplay);
 
 
-// Funkcja przygotowująca formularz do edycji (ETAP 3 i 4)
+// Funkcja przygotowująca formularz do edycji
 function startEditing(id, book) {
     currentEditId = id; 
     
-    // Wypełnianie formularza danymi wybranej książki
     document.getElementById("title").value = book.title;
     document.getElementById("author").value = book.author;
     document.getElementById("category").value = book.category || "Inne";
     document.getElementById("coverUrl").value = book.coverUrl || "";
     document.getElementById("description").value = book.description || "";
-    document.getElementById("rating").value = book.rating || 5; // NOWE (ETAP 4)
+    document.getElementById("rating").value = book.rating || 5; 
 
-    // Zmiana wyglądu formularza
     formTitle.innerText = `Edytujesz: ${book.title}`;
     submitBtn.innerText = "Zapisz zmiany";
     submitBtn.style.backgroundColor = "#f39c12"; 
     cancelEditBtn.style.display = "block";
 
-    // Przewinięcie strony do góry
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// Funkcja anulowania edycji
 cancelEditBtn.addEventListener("click", () => {
     resetFormState();
 });
@@ -195,7 +189,7 @@ function resetFormState() {
     currentEditId = null;
     formTitle.innerText = "Dodaj nową książkę";
     submitBtn.innerText = "Dodaj do bazy";
-    submitBtn.style.backgroundColor = ""; // Wracamy do domyślnego koloru z CSS
+    submitBtn.style.backgroundColor = ""; 
     cancelEditBtn.style.display = "none";
 }
 
@@ -206,9 +200,11 @@ async function deleteBook(id) {
         const response = await fetch(deleteUrl, { method: "DELETE" });
         if (response.ok) {
             fetchBooks(); 
+            showToast("Książka została pomyślnie usunięta!", "success"); // NOWE
         }
     } catch (error) {
         console.error("Błąd podczas usuwania:", error);
+        showToast("Błąd podczas usuwania książki.", "error"); // NOWE
     }
 }
 
@@ -221,19 +217,19 @@ bookForm.addEventListener("submit", async (e) => {
     const category = document.getElementById("category").value; 
     const coverUrl = document.getElementById("coverUrl").value; 
     const description = document.getElementById("description").value;
-    const rating = document.getElementById("rating").value; // NOWE (ETAP 4)
+    const rating = document.getElementById("rating").value; 
 
     const bookData = { title, author, category, coverUrl, description, rating };
 
     try {
-        // Domyślnie ustawiamy dodawanie nowej książki
         let url = FIREBASE_URL;
         let method = "POST";
+        let isEditing = false; // Zmienna pomocnicza do powiadomień
 
-        // Jeśli jesteśmy w trybie edycji, zmieniamy URL i metodę na PUT
         if (currentEditId) {
             url = `https://lubimyczytac-projekt-default-rtdb.europe-west1.firebasedatabase.app/books/${currentEditId}.json`;
             method = "PUT";
+            isEditing = true;
         }
 
         const response = await fetch(url, {
@@ -243,13 +239,22 @@ bookForm.addEventListener("submit", async (e) => {
         });
 
         if (response.ok) {
-            resetFormState(); // Czyszczenie i powrót do trybu dodawania
+            resetFormState(); 
             fetchBooks();
+            
+            // NOWE (ETAP 4): Wyświetlanie powiadomienia Toast
+            if (isEditing) {
+                showToast("Zmiany zostały zapisane pomyślnie!", "success");
+            } else {
+                showToast("Nowa książka została dodana do bazy!", "success");
+            }
         } else {
             console.error("Błąd zapisu w bazie danych.");
+            showToast("Wystąpił błąd podczas zapisu.", "error"); // NOWE
         }
     } catch (error) {
         console.error("Błąd sieci:", error);
+        showToast("Błąd sieci. Sprawdź połączenie.", "error"); // NOWE
     }
 });
 
@@ -259,22 +264,20 @@ window.onclick = (event) => {
     if (event.target === modal) { modal.style.display = "none"; }
 };
 
-// NOWE (ETAP 4): Funkcja do wizualnego generowania gwiazdek
+// Funkcja do wizualnego generowania gwiazdek
 function generateStars(rating) {
     const maxStars = 5;
     const fullStar = '★';
     const emptyStar = '☆';
     
-    // Upewniamy się, że ocena to liczba
     let parsedRating = parseInt(rating) || 0;
     if (parsedRating > maxStars) parsedRating = maxStars;
     if (parsedRating < 0) parsedRating = 0;
     
-    // Zwracamy odpowiednią liczbę pełnych i pustych gwiazdek
     return fullStar.repeat(parsedRating) + emptyStar.repeat(maxStars - parsedRating);
 }
 
-// NOWE (ETAP 4): Algorytm do obliczania statystyk
+// Algorytm do obliczania statystyk
 function updateStatistics(data) {
     const totalBooksElement = document.getElementById("totalBooks");
     const avgRatingElement = document.getElementById("avgRating");
@@ -291,7 +294,6 @@ function updateStatistics(data) {
     let totalRating = 0;
     let ratedBooksCount = 0;
 
-    // Obliczanie średniej oceny za pomocą pętli
     books.forEach(book => {
         const rating = parseFloat(book.rating);
         if (!isNaN(rating) && rating > 0) {
@@ -300,11 +302,32 @@ function updateStatistics(data) {
         }
     });
 
-    // Zabezpieczenie przed dzieleniem przez zero i formatowanie do jednego miejsca po przecinku
     const avgRating = ratedBooksCount > 0 ? (totalRating / ratedBooksCount).toFixed(1) : "0.0";
 
     totalBooksElement.innerText = totalBooks;
     avgRatingElement.innerText = avgRating;
+}
+
+// NOWE (ETAP 4): Funkcja wyświetlająca powiadomienie (Toast)
+function showToast(message, type = 'success') {
+    const container = document.getElementById('toastContainer');
+    if (!container) return;
+
+    // Tworzenie elementu div dla powiadomienia
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    
+    // Ustawienie ikony w zależności od typu (sukces / błąd)
+    const icon = type === 'success' ? '✅' : '❌';
+    toast.innerHTML = `<span>${icon}</span> <span>${message}</span>`;
+    
+    // Dodanie powiadomienia do kontenera na stronie
+    container.appendChild(toast);
+
+    // Automatyczne usunięcie powiadomienia po 3 sekundach (po zakończeniu animacji)
+    setTimeout(() => {
+        toast.remove();
+    }, 3000);
 }
 
 // Wywołanie funkcji przy załadowaniu strony
