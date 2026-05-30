@@ -1,5 +1,5 @@
-// Sprawdzenie czy plik działa poprawnie
-console.log("Skrypt app.js został pomyślnie załadowany. (Etap 3)");
+// Sprawdzenie czy plik działa poprawnie (Etap 4)
+console.log("Skrypt app.js został pomyślnie załadowany. (Etap 4)");
 
 // URL do Firebase Realtime Database
 const FIREBASE_URL = "https://lubimyczytac-projekt-default-rtdb.europe-west1.firebasedatabase.app/books.json";
@@ -7,7 +7,7 @@ const FIREBASE_URL = "https://lubimyczytac-projekt-default-rtdb.europe-west1.fir
 const bookForm = document.getElementById("bookForm");
 const booksContainer = document.getElementById("booksContainer");
 
-// Elementy formularza i edycji (ETAP 3)
+// Elementy formularza i edycji
 const submitBtn = document.getElementById("submitBtn");
 const cancelEditBtn = document.getElementById("cancelEditBtn");
 const formTitle = document.getElementById("formTitle");
@@ -20,6 +20,7 @@ const modalTitle = document.getElementById("modalTitle");
 const modalAuthor = document.getElementById("modalAuthor");
 const modalCategory = document.getElementById("modalCategory"); 
 const modalDesc = document.getElementById("modalDesc");
+const modalRating = document.getElementById("modalRating"); // NOWE (ETAP 4)
 
 // Pobieranie i renderowanie książek z bazy danych
 async function fetchBooks() {
@@ -42,13 +43,16 @@ async function fetchBooks() {
             
             // Sprawdzamy czy jest kategoria i okładka (zabezpieczenie)
             const catText = book.category ? book.category : "Brak kategorii";
-            // Używamy niezawodnego linku z Unsplash jako domyślnej okładki
             const coverImg = book.coverUrl ? book.coverUrl : "https://images.unsplash.com/photo-1543002588-bfa74002ed7e?w=300&q=80";
+            
+            // NOWE (ETAP 4): Formatowanie oceny
+            const ratingText = book.rating ? `⭐ ${book.rating}/5` : "Brak oceny";
 
             // Dodano klasy book-title i book-author dla wyszukiwarki
             bookCard.innerHTML = `
                 <img src="${coverImg}" class="book-cover" alt="Okładka">
                 <span class="category-badge">${catText}</span>
+                <div class="rating-badge">${ratingText}</div>
                 <h3 class="book-title">${book.title}</h3>
                 <div class="author book-author">Autor: ${book.author}</div>
             `;
@@ -66,11 +70,12 @@ async function fetchBooks() {
                 modalTitle.innerText = book.title;
                 modalAuthor.innerText = book.author;
                 modalCategory.innerText = catText; 
+                modalRating.innerText = ratingText; // NOWE (ETAP 4)
                 modalDesc.innerText = book.description || "Brak opisu.";
                 modal.style.display = "block";
             });
 
-            // NOWE (ETAP 3): Przycisk "Edytuj"
+            // Przycisk "Edytuj" (ETAP 3)
             const editBtn = document.createElement("button");
             editBtn.className = "edit-btn";
             editBtn.innerText = "Edytuj";
@@ -90,7 +95,7 @@ async function fetchBooks() {
             });
 
             btnContainer.appendChild(detailsBtn);
-            btnContainer.appendChild(editBtn); // Dodano przycisk edycji
+            btnContainer.appendChild(editBtn); 
             btnContainer.appendChild(deleteBtn);
             bookCard.appendChild(btnContainer);
             
@@ -102,7 +107,7 @@ async function fetchBooks() {
     }
 }
 
-// NOWE (ETAP 3): Funkcja Wyszukiwania na żywo
+// Funkcja Wyszukiwania na żywo (ETAP 3)
 document.getElementById('searchInput').addEventListener('input', function(e) {
     const searchTerm = e.target.value.toLowerCase();
     const cards = document.querySelectorAll('.book-card');
@@ -119,7 +124,7 @@ document.getElementById('searchInput').addEventListener('input', function(e) {
     });
 });
 
-// NOWE (ETAP 3): Funkcja przygotowująca formularz do edycji
+// Funkcja przygotowująca formularz do edycji (ETAP 3 i 4)
 function startEditing(id, book) {
     currentEditId = id; 
     
@@ -129,6 +134,7 @@ function startEditing(id, book) {
     document.getElementById("category").value = book.category || "Inne";
     document.getElementById("coverUrl").value = book.coverUrl || "";
     document.getElementById("description").value = book.description || "";
+    document.getElementById("rating").value = book.rating || 5; // NOWE (ETAP 4)
 
     // Zmiana wyglądu formularza
     formTitle.innerText = `Edytujesz: ${book.title}`;
@@ -140,7 +146,7 @@ function startEditing(id, book) {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// NOWE (ETAP 3): Funkcja anulowania edycji
+// Funkcja anulowania edycji
 cancelEditBtn.addEventListener("click", () => {
     resetFormState();
 });
@@ -176,8 +182,9 @@ bookForm.addEventListener("submit", async (e) => {
     const category = document.getElementById("category").value; 
     const coverUrl = document.getElementById("coverUrl").value; 
     const description = document.getElementById("description").value;
+    const rating = document.getElementById("rating").value; // NOWE (ETAP 4)
 
-    const bookData = { title, author, category, coverUrl, description };
+    const bookData = { title, author, category, coverUrl, description, rating };
 
     try {
         // Domyślnie ustawiamy dodawanie nowej książki
