@@ -24,7 +24,7 @@ body {
 
 header {
     text-align: center;
-    margin-bottom: 30px; /* Zmniejszono na potrzeby statystyk */
+    margin-bottom: 30px;
     padding-bottom: 20px;
     border-bottom: 2px solid var(--border-color);
 }
@@ -40,7 +40,7 @@ header h1 {
     font-style: italic;
 }
 
-/* --- NOWE STYLE (ETAP 4) - Statystyki --- */
+/* Statystyki */
 .stats-section {
     display: flex;
     gap: 20px;
@@ -217,8 +217,7 @@ button:hover {
     margin-bottom: 5px;
 }
 
-/* --- NOWE STYLE (ETAP 2) --- */
-
+/* Style (Etap 2) */
 .book-cover {
     width: 100%;
     height: 250px;
@@ -276,9 +275,7 @@ button:hover {
     background-color: #d63031;
 }
 
-/* --- NOWE STYLE (ETAP 3) --- */
-
-/* Wyszukiwarka */
+/* Wyszukiwarka i Przyciski (Etap 3) */
 .search-bar {
     width: 100%;
     padding: 12px;
@@ -295,7 +292,6 @@ button:hover {
     box-shadow: 0 0 8px rgba(52, 152, 219, 0.4);
 }
 
-/* Przycisk Edycji */
 .edit-btn {
     background-color: #f39c12;
     color: white;
@@ -313,7 +309,7 @@ button:hover {
     background-color: #d68910;
 }
 
-/* --- NOWE STYLE (ETAP 4) --- */
+/* Filtrowanie, oceny i sortowanie (Etap 4) */
 .rating-badge {
     color: #f39c12;
     font-size: 1.1em;
@@ -321,7 +317,6 @@ button:hover {
     margin-bottom: 10px;
 }
 
-/* Filtrowanie i sortowanie */
 .search-filter-container {
     display: flex;
     gap: 15px;
@@ -347,4 +342,44 @@ button:hover {
 .category-filter:focus {
     outline: none;
     box-shadow: 0 0 8px rgba(52, 152, 219, 0.4);
+}
+
+/* --- NOWE STYLE (ETAP 4) - Powiadomienia Toast --- */
+.toast-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 9999;
+}
+
+.toast {
+    min-width: 250px;
+    padding: 15px 20px;
+    background-color: #2ecc71; /* Zielony dla sukcesu */
+    color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: bold;
+    font-size: 15px;
+    transform: translateX(120%);
+    /* Animacja wyjazdu i schowania */
+    animation: slideIn 0.4s forwards, slideOut 0.4s forwards 2.6s;
+}
+
+.toast.error {
+    background-color: #e74c3c; /* Czerwony dla błędu */
+}
+
+@keyframes slideIn {
+    to { transform: translateX(0); }
+}
+
+@keyframes slideOut {
+    to { transform: translateX(120%); }
 }
