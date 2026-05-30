@@ -10,12 +10,14 @@
     <div class="container">
         <header>
             <h1>Klon LubimyCzytać</h1>
-            <p>Projekt semestralny — Etap 3</p> <p class="student-info">Wykonali: Vladyslav Savka (PL77458) i Dmytro Datsenko (PL77384)</p>
+            <p>Projekt semestralny — Etap 4</p> 
+            <p class="student-info">Wykonali: Vladyslav Savka (PL77458) i Dmytro Datsenko (PL77384)</p>
         </header>
 
         <main>
             <section class="form-section">
-                <h2 id="formTitle">Dodaj nową książkę</h2> <form id="bookForm">
+                <h2 id="formTitle">Dodaj nową książkę</h2> 
+                <form id="bookForm">
                     <div class="form-group">
                         <label for="title">Tytuł książki:</label>
                         <input type="text" id="title" placeholder="Np. Wiedźmin" required>
@@ -35,6 +37,11 @@
                             <option value="Powieść">Powieść</option>
                             <option value="Inne" selected>Inne</option>
                         </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="rating">Ocena (1-5):</label>
+                        <input type="number" id="rating" min="1" max="5" placeholder="Np. 5" required>
                     </div>
 
                     <div class="form-group">
@@ -70,6 +77,7 @@
             <h2 id="modalTitle">Tytuł</h2>
             <p class="modal-author">Autor: <span id="modalAuthor"></span></p>
             <p class="modal-author">Kategoria: <span id="modalCategory"></span></p>
+            <p class="modal-author">Ocena: <span id="modalRating" class="rating-badge"></span></p>
             <div class="modal-desc" id="modalDesc"></div>
         </div>
     </div>
