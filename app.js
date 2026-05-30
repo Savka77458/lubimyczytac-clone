@@ -28,6 +28,9 @@ async function fetchBooks() {
         const response = await fetch(FIREBASE_URL);
         const data = await response.json();
         
+        // NOWE (ETAP 4): Aktualizacja panelu statystyk po pobraniu danych
+        updateStatistics(data);
+        
         booksContainer.innerHTML = "";
 
         if (!data) {
@@ -269,6 +272,39 @@ function generateStars(rating) {
     
     // Zwracamy odpowiednią liczbę pełnych i pustych gwiazdek
     return fullStar.repeat(parsedRating) + emptyStar.repeat(maxStars - parsedRating);
+}
+
+// NOWE (ETAP 4): Algorytm do obliczania statystyk
+function updateStatistics(data) {
+    const totalBooksElement = document.getElementById("totalBooks");
+    const avgRatingElement = document.getElementById("avgRating");
+
+    if (!data) {
+        totalBooksElement.innerText = "0";
+        avgRatingElement.innerText = "0.0";
+        return;
+    }
+
+    const books = Object.values(data);
+    const totalBooks = books.length;
+    
+    let totalRating = 0;
+    let ratedBooksCount = 0;
+
+    // Obliczanie średniej oceny za pomocą pętli
+    books.forEach(book => {
+        const rating = parseFloat(book.rating);
+        if (!isNaN(rating) && rating > 0) {
+            totalRating += rating;
+            ratedBooksCount++;
+        }
+    });
+
+    // Zabezpieczenie przed dzieleniem przez zero i formatowanie do jednego miejsca po przecinku
+    const avgRating = ratedBooksCount > 0 ? (totalRating / ratedBooksCount).toFixed(1) : "0.0";
+
+    totalBooksElement.innerText = totalBooks;
+    avgRatingElement.innerText = avgRating;
 }
 
 // Wywołanie funkcji przy załadowaniu strony
