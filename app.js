@@ -107,22 +107,35 @@ async function fetchBooks() {
     }
 }
 
-// Funkcja Wyszukiwania na żywo (ETAP 3)
-document.getElementById('searchInput').addEventListener('input', function(e) {
-    const searchTerm = e.target.value.toLowerCase();
+// Funkcja Wyszukiwania na żywo i Filtrowania (ETAP 3 i 4)
+function filterBooks() {
+    const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+    const selectedCategory = document.getElementById('categoryFilter').value.toLowerCase();
     const cards = document.querySelectorAll('.book-card');
 
     cards.forEach(card => {
         const title = card.querySelector('.book-title').innerText.toLowerCase();
         const author = card.querySelector('.book-author').innerText.toLowerCase();
+        const category = card.querySelector('.category-badge').innerText.toLowerCase();
         
-        if(title.includes(searchTerm) || author.includes(searchTerm)) {
+        // Sprawdzamy czy tekst pasuje
+        const matchesSearch = title.includes(searchTerm) || author.includes(searchTerm);
+        // Sprawdzamy czy kategoria pasuje
+        const matchesCategory = selectedCategory === 'all' || category === selectedCategory;
+
+        // Pokaż kartę tylko jeśli pasuje i do wyszukiwarki, i do filtra
+        if(matchesSearch && matchesCategory) {
             card.style.display = 'flex';
         } else {
             card.style.display = 'none';
         }
     });
-});
+}
+
+// Nasłuchiwanie zmian w polu wyszukiwania i na liście rozwijanej
+document.getElementById('searchInput').addEventListener('input', filterBooks);
+document.getElementById('categoryFilter').addEventListener('change', filterBooks);
+
 
 // Funkcja przygotowująca formularz do edycji (ETAP 3 i 4)
 function startEditing(id, book) {
