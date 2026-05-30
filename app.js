@@ -11,7 +11,7 @@ const booksContainer = document.getElementById("booksContainer");
 const submitBtn = document.getElementById("submitBtn");
 const cancelEditBtn = document.getElementById("cancelEditBtn");
 const formTitle = document.getElementById("formTitle");
-let currentEditId = null; // Zmienna przechowująca ID aktualnie edytowanej książki
+let currentEditId = null; 
 
 // Elementy Modala
 const modal = document.getElementById("bookModal");
@@ -67,7 +67,7 @@ async function fetchBooks() {
             const btnContainer = document.createElement("div");
             btnContainer.className = "card-buttons";
 
-            // Tworzenie przycisku "Szczegóły"
+            // Przycisk "Szczegóły"
             const detailsBtn = document.createElement("button");
             detailsBtn.className = "details-btn";
             detailsBtn.innerText = "Szczegóły";
@@ -125,7 +125,6 @@ function updateBooksDisplay() {
     const container = document.getElementById('booksContainer');
     const cards = Array.from(container.querySelectorAll('.book-card'));
 
-    // 1. Najpierw sortujemy tablicę kart
     cards.sort((a, b) => {
         if (sortValue === 'ratingDesc') {
             return parseFloat(b.dataset.rating) - parseFloat(a.dataset.rating);
@@ -137,9 +136,8 @@ function updateBooksDisplay() {
         return 0; // domyślnie
     });
 
-    // 2. Następnie dodajemy je z powrotem do kontenera w nowej kolejności i filtrujemy
     cards.forEach(card => {
-        container.appendChild(card); // To automatycznie zmienia ich kolejność w DOM
+        container.appendChild(card); 
 
         const title = card.querySelector('.book-title').innerText.toLowerCase();
         const author = card.querySelector('.book-author').innerText.toLowerCase();
@@ -200,11 +198,11 @@ async function deleteBook(id) {
         const response = await fetch(deleteUrl, { method: "DELETE" });
         if (response.ok) {
             fetchBooks(); 
-            showToast("Książka została pomyślnie usunięta!", "success"); // NOWE
+            showToast("Książka została pomyślnie usunięta!", "success"); 
         }
     } catch (error) {
         console.error("Błąd podczas usuwania:", error);
-        showToast("Błąd podczas usuwania książki.", "error"); // NOWE
+        showToast("Błąd podczas usuwania książki.", "error"); 
     }
 }
 
@@ -224,7 +222,7 @@ bookForm.addEventListener("submit", async (e) => {
     try {
         let url = FIREBASE_URL;
         let method = "POST";
-        let isEditing = false; // Zmienna pomocnicza do powiadomień
+        let isEditing = false; 
 
         if (currentEditId) {
             url = `https://lubimyczytac-projekt-default-rtdb.europe-west1.firebasedatabase.app/books/${currentEditId}.json`;
@@ -242,7 +240,6 @@ bookForm.addEventListener("submit", async (e) => {
             resetFormState(); 
             fetchBooks();
             
-            // NOWE (ETAP 4): Wyświetlanie powiadomienia Toast
             if (isEditing) {
                 showToast("Zmiany zostały zapisane pomyślnie!", "success");
             } else {
@@ -250,11 +247,11 @@ bookForm.addEventListener("submit", async (e) => {
             }
         } else {
             console.error("Błąd zapisu w bazie danych.");
-            showToast("Wystąpił błąd podczas zapisu.", "error"); // NOWE
+            showToast("Wystąpił błąd podczas zapisu.", "error"); 
         }
     } catch (error) {
         console.error("Błąd sieci:", error);
-        showToast("Błąd sieci. Sprawdź połączenie.", "error"); // NOWE
+        showToast("Błąd sieci. Sprawdź połączenie.", "error"); 
     }
 });
 
@@ -308,27 +305,48 @@ function updateStatistics(data) {
     avgRatingElement.innerText = avgRating;
 }
 
-// NOWE (ETAP 4): Funkcja wyświetlająca powiadomienie (Toast)
+// Funkcja wyświetlająca powiadomienie (Toast)
 function showToast(message, type = 'success') {
     const container = document.getElementById('toastContainer');
     if (!container) return;
 
-    // Tworzenie elementu div dla powiadomienia
     const toast = document.createElement('div');
     toast.className = `toast ${type}`;
     
-    // Ustawienie ikony w zależności od typu (sukces / błąd)
     const icon = type === 'success' ? '✅' : '❌';
     toast.innerHTML = `<span>${icon}</span> <span>${message}</span>`;
     
-    // Dodanie powiadomienia do kontenera na stronie
     container.appendChild(toast);
 
-    // Automatyczne usunięcie powiadomienia po 3 sekundach (po zakończeniu animacji)
     setTimeout(() => {
         toast.remove();
     }, 3000);
 }
+
+// NOWE (ETAP 4): Logika Dark Mode
+const themeToggleBtn = document.getElementById('themeToggle');
+const currentTheme = localStorage.getItem('theme');
+
+// Sprawdź przy ładowaniu, czy włączono ciemny motyw
+if (currentTheme === 'dark') {
+    document.body.classList.add('dark-theme');
+    themeToggleBtn.innerText = '☀️';
+}
+
+themeToggleBtn.addEventListener('click', () => {
+    document.body.classList.toggle('dark-theme');
+    
+    let theme = 'light';
+    if (document.body.classList.contains('dark-theme')) {
+        theme = 'dark';
+        themeToggleBtn.innerText = '☀️';
+    } else {
+        themeToggleBtn.innerText = '🌙';
+    }
+    
+    // Zapisz wybór użytkownika w localStorage
+    localStorage.setItem('theme', theme);
+});
 
 // Wywołanie funkcji przy załadowaniu strony
 fetchBooks();
