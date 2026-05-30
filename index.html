@@ -62,7 +62,18 @@
             <section class="list-section">
                 <h2>Lista książek w bazie</h2>
                 
-                <input type="text" id="searchInput" class="search-bar" placeholder="Szukaj po tytule lub autorze...">
+                <div class="search-filter-container">
+                    <input type="text" id="searchInput" class="search-bar" placeholder="Szukaj po tytule lub autorze...">
+                    
+                    <select id="categoryFilter" class="category-filter">
+                        <option value="all">Wszystkie kategorie</option>
+                        <option value="Fantasy">Fantasy</option>
+                        <option value="Sci-Fi">Sci-Fi</option>
+                        <option value="Kryminał">Kryminał</option>
+                        <option value="Powieść">Powieść</option>
+                        <option value="Inne">Inne</option>
+                    </select>
+                </div>
 
                 <div id="booksContainer">
                     <p class="loading">Ładowanie książek...</p>
