@@ -45,8 +45,8 @@ async function fetchBooks() {
             const catText = book.category ? book.category : "Brak kategorii";
             const coverImg = book.coverUrl ? book.coverUrl : "https://images.unsplash.com/photo-1543002588-bfa74002ed7e?w=300&q=80";
             
-            // NOWE (ETAP 4): Formatowanie oceny
-            const ratingText = book.rating ? `⭐ ${book.rating}/5` : "Brak oceny";
+            // NOWE (ETAP 4): Formatowanie oceny na gwiazdki wizualne
+            const ratingText = book.rating ? generateStars(book.rating) : "Brak oceny";
 
             // Dodano klasy book-title i book-author dla wyszukiwarki
             bookCard.innerHTML = `
@@ -219,6 +219,21 @@ closeBtn.onclick = () => { modal.style.display = "none"; };
 window.onclick = (event) => {
     if (event.target === modal) { modal.style.display = "none"; }
 };
+
+// NOWE (ETAP 4): Funkcja do wizualnego generowania gwiazdek
+function generateStars(rating) {
+    const maxStars = 5;
+    const fullStar = '★';
+    const emptyStar = '☆';
+    
+    // Upewniamy się, że ocena to liczba
+    let parsedRating = parseInt(rating) || 0;
+    if (parsedRating > maxStars) parsedRating = maxStars;
+    if (parsedRating < 0) parsedRating = 0;
+    
+    // Zwracamy odpowiednią liczbę pełnych i pustych gwiazdek
+    return fullStar.repeat(parsedRating) + emptyStar.repeat(maxStars - parsedRating);
+}
 
 // Wywołanie funkcji przy załadowaniu strony
 fetchBooks();
